@@ -1,0 +1,14 @@
+D:\workspace\ArticoliWebService\bin\Debug\netcoreapp2.2\Articoli-Web-Service.deps.json
+D:\workspace\ArticoliWebService\bin\Debug\netcoreapp2.2\Articoli-Web-Service.runtimeconfig.json
+D:\workspace\ArticoliWebService\bin\Debug\netcoreapp2.2\Articoli-Web-Service.runtimeconfig.dev.json
+D:\workspace\ArticoliWebService\bin\Debug\netcoreapp2.2\Articoli-Web-Service.dll
+D:\workspace\ArticoliWebService\bin\Debug\netcoreapp2.2\Articoli-Web-Service.pdb
+D:\workspace\ArticoliWebService\obj\Debug\netcoreapp2.2\Articoli-Web-Service.csprojAssemblyReference.cache
+D:\workspace\ArticoliWebService\obj\Debug\netcoreapp2.2\Articoli-Web-Service.csproj.CoreCompileInputs.cache
+D:\workspace\ArticoliWebService\obj\Debug\netcoreapp2.2\Articoli-Web-Service.RazorAssemblyInfo.cache
+D:\workspace\ArticoliWebService\obj\Debug\netcoreapp2.2\Articoli-Web-Service.RazorAssemblyInfo.cs
+D:\workspace\ArticoliWebService\obj\Debug\netcoreapp2.2\Articoli-Web-Service.AssemblyInfoInputs.cache
+D:\workspace\ArticoliWebService\obj\Debug\netcoreapp2.2\Articoli-Web-Service.AssemblyInfo.cs
+D:\workspace\ArticoliWebService\obj\Debug\netcoreapp2.2\Articoli-Web-Service.RazorTargetAssemblyInfo.cache
+D:\workspace\ArticoliWebService\obj\Debug\netcoreapp2.2\Articoli-Web-Service.dll
+D:\workspace\ArticoliWebService\obj\Debug\netcoreapp2.2\Articoli-Web-Service.pdb
