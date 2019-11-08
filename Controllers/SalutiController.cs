@@ -32,3 +32,27 @@ namespace Controllers
 
     }
 }
+
+/*
+using Microsoft.AspNetCore.Mvc;
+namespace ArticoliWebService.Controllers
+{
+    [ApiController]
+    [Route("api/saluti")]
+    public class SalutiController : ControllerBase
+    {
+        [HttpGet]
+        public IActionResult GetSaluti()
+        {
+            return Ok("Saluti, sono il tuo primo web service creato in .Net Core 3");
+        }
+
+        [HttpGet("{nome}")]
+        public IActionResult GetSalutiNome(string nome)
+        {
+            return Ok(string.Format("Saluti {0}, sono il tuo primo web service creato in .Net Core 3", nome));
+        }
+
+    }
+}
+ */
