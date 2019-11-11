@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ArticoliWebService.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,6 +28,11 @@ namespace Articoli_Web_Service
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            var connectionString = Configuration["connectionStrings:alphashopDbConString"];
+            services.AddDbContext<AlphaShopDbContext>(c => c.UseSqlServer(connectionString));
+            // implementazione della Inversion of Control <--------
+            services.AddScoped<IArticoliRepository, ArticoliRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

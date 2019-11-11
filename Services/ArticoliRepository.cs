@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ArticoliWebService.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ArticoliWebService.Services
 {
@@ -11,27 +13,29 @@ namespace ArticoliWebService.Services
         {
             this.alphaShopDbContext = alphaShopDbContext;
         }
-        ICollection<Articoli> IArticoliRepository.SelArticoliByDescrizione(string Descrizione)
+        // aggiungo async anche qui, e cambio ToList() in ToListAsync e l'await
+        async Task<ICollection<Articoli>> IArticoliRepository.SelArticoliByDescrizione(string Descrizione)
         {
-            return this.alphaShopDbContext.Articoli
+            return await this.alphaShopDbContext.Articoli
                 .Where(a => a.Descrizione.Contains(Descrizione))
                 .OrderBy(a => a.Descrizione)
-                .ToList();
+                .ToListAsync();
         }
 
-        Articoli IArticoliRepository.SelArticoloByCodice(string Code)
+        async Task<Articoli> IArticoliRepository.SelArticoloByCodice(string Code)
         {
-            return this.alphaShopDbContext.Articoli
+            return await this.alphaShopDbContext.Articoli
                 .Where(a => a.CodArt.Equals(Code))
-                .FirstOrDefault();
+                .Include(a=>a.Barcode)
+                .FirstOrDefaultAsync();
         }
 
-        Articoli IArticoliRepository.SelArticoloByEan(string Ean)
+        async Task<Articoli> IArticoliRepository.SelArticoloByEan(string Ean)
         {
-            return this.alphaShopDbContext.Barcode
+            return await this.alphaShopDbContext.Barcode
                 .Where(b => b.Barcode.Equals(Ean))
                 .Select(a => a.articolo)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
         }
         bool IArticoliRepository.InsArticoli(Articoli articolo)
         {
@@ -45,9 +49,10 @@ namespace ArticoliWebService.Services
         {
             throw new System.NotImplementedException();
         }
-        bool IArticoliRepository.ArticoloExists(string Code)
+        async Task<bool> IArticoliRepository.ArticoloExists(string Code)
         {
-            throw new System.NotImplementedException();
+            return await this.alphaShopDbContext.Articoli
+                .AnyAsync(c => c.CodArt == Code);
         }
 
 
