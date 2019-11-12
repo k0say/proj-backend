@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ArticoliWebService.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ArticoliWebService.Services
@@ -19,6 +21,8 @@ namespace ArticoliWebService.Services
             return await this.alphaShopDbContext.Articoli
                 .Where(a => a.Descrizione.Contains(Descrizione))
                 .Include(a => a.famassort)
+                // TEST
+                .Include(a => a.Barcode)
                 .OrderBy(a => a.Descrizione)
                 .ToListAsync();
         }
@@ -41,8 +45,26 @@ namespace ArticoliWebService.Services
         }
         bool IArticoliRepository.InsArticoli(Articoli articolo)
         {
-            throw new System.NotImplementedException();
+            this.alphaShopDbContext.Add(articolo);
+            return Salva();
         }
+
+        private bool Salva()
+        {
+            var saved = this.alphaShopDbContext.SaveChanges();
+            return saved >= 0 ? true : false;
+        }
+
+        public bool UpdArticoli(Articoli articolo)  {
+            this.alphaShopDbContext.Update(articolo);
+            return Salva();
+        }
+
+        public bool DelArticoli(Articoli articolo)  {
+            this.alphaShopDbContext.Remove(articolo);
+            return Salva();
+        }
+
         bool IArticoliRepository.UpdArticoli(Articoli articolo)
         {
             throw new System.NotImplementedException();
@@ -57,6 +79,7 @@ namespace ArticoliWebService.Services
                 .AnyAsync(c => c.CodArt == Code);
         }
 
+        //public IActionResult SaveArticoli([FromBody] Articoli articolo) {}
 
 
         bool IArticoliRepository.Salva()
@@ -64,8 +87,9 @@ namespace ArticoliWebService.Services
             throw new System.NotImplementedException();
         }
 
-
-
-
+        internal static object SelArticoloByCodice(string codArt)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

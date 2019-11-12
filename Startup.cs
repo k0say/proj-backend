@@ -31,8 +31,10 @@ namespace Articoli_Web_Service
 
             var connectionString = Configuration["connectionStrings:alphashopDbConString"];
             services.AddDbContext<AlphaShopDbContext>(c => c.UseSqlServer(connectionString));
-            // implementazione della Inversion of Control <--------
+            
+            // implementazione della Inversion of Control <-------- e del tipo di DI voluta
             services.AddScoped<IArticoliRepository, ArticoliRepository>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

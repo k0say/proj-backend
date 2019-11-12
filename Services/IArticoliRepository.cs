@@ -20,3 +20,4 @@ namespace ArticoliWebService.Services
         Task<bool> ArticoloExists(string Code);
     }
 }
+
