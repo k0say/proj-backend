@@ -10,6 +10,7 @@ namespace ArticoliWebService.Services
             rendo di tipo Task anche la collection
         */
         Task<ICollection<Articoli>> SelArticoliByDescrizione(string Descrizione);
+        Task<ICollection<Articoli>> SelArticoliByDescrizione(string Descrizione, string IdCat);
         Task<Articoli> SelArticoloByCodice(string Code);
         Articoli SelArticoloByCodice2(string Code);
         Task<Articoli> SelArticoloByEan(string Ean);

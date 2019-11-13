@@ -15,6 +15,8 @@ namespace ArticoliWebService.Dtos
         public string IdStatoArt { get; set; }
         public ICollection<BarcodeDto> Ean { get; set; }
         public string Categoria { get; set; }
+        public int? IdIva { get; set; }
+        public int? IdFamAss { get; set; }
 
     }
 }

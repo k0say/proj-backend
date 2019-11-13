@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using ArticoliWebService.Dtos;
 using ArticoliWebService.Models;
 using ArticoliWebService.Services;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArticoliWebService.Controllers
@@ -14,21 +16,22 @@ namespace ArticoliWebService.Controllers
     public class ArticoliController : Controller
     {
         private readonly IArticoliRepository articolirepository;
-
-        public ArticoliController(IArticoliRepository articolirepository)
+        private readonly IMapper mapper;
+        public ArticoliController(IArticoliRepository articolirepository, IMapper mapper)
         {
+            this.mapper = mapper;
             this.articolirepository = articolirepository;
         }
 
         [HttpGet("cerca/descrizione/{filter}")]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(404)]
         [ProducesResponseType(200, Type = typeof(IEnumerable<ArticoliDto>))]
-        public async Task<IActionResult> GetArticoliByDesc(string filter)
+        public async Task<ActionResult<IEnumerable<ArticoliDto>>> GetArticoliByDesc(string filter, [FromQuery] string idCat)
         {
             var articoliDto = new List<ArticoliDto>();
 
-            var articoli = await this.articolirepository.SelArticoliByDescrizione(filter);
+            var articoli = await this.articolirepository.SelArticoliByDescrizione(filter, idCat);
 
             if (!ModelState.IsValid)
             {
@@ -39,7 +42,7 @@ namespace ArticoliWebService.Controllers
             {
                 return NotFound(string.Format("Non è stato trovato alcun articolo con il filtro '{0}'", filter));
             }
-
+        /*
             foreach (var articolo in articoli)
             {
                 articoliDto.Add(new ArticoliDto
@@ -51,12 +54,12 @@ namespace ArticoliWebService.Controllers
                     PzCart = articolo.PzCart,
                     PesoNetto = articolo.PesoNetto,
                     DataCreazione = articolo.DataCreazione,
-                    Categoria = articolo.famassort.Descrizione,
+                    Categoria = (articolo.famassort != null) ? articolo.famassort.Descrizione : null,
                     IdStatoArt = articolo.IdStatoArt
                 });
             }
-
-            return Ok(articoliDto);
+        */
+            return Ok(mapper.Map<IEnumerable<ArticoliDto>>(articoli));
         }
 
         private ArticoliDto CreateArticoloDTO(Articoli articolo)
@@ -90,10 +93,10 @@ namespace ArticoliWebService.Controllers
         }
 
         [HttpGet("cerca/codice/{CodArt}", Name = "GetArticoli")]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(404)]
         [ProducesResponseType(200, Type = typeof(ArticoliDto))]
-        public async Task<IActionResult> GetArticoloByCode(string CodArt)
+        public async Task<ActionResult<IEnumerable<ArticoliDto>>> GetArticoloByCode(string CodArt)
         {
             if (!await this.articolirepository.ArticoloExists(CodArt))
             {
@@ -106,10 +109,10 @@ namespace ArticoliWebService.Controllers
         }
 
         [HttpGet("cerca/barcode/{Ean}")]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(404)]
         [ProducesResponseType(200, Type = typeof(ArticoliDto))]
-        public async Task<IActionResult> GetArticoloByEan(string Ean)
+        public async Task<ActionResult<IEnumerable<ArticoliDto>>> GetArticoloByEan(string Ean)
         {
             var articolo = await this.articolirepository.SelArticoloByEan(Ean);
 
@@ -124,7 +127,7 @@ namespace ArticoliWebService.Controllers
 
         [HttpPost("inserisci")]
         [ProducesResponseType(201, Type = typeof(Articoli))]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(422)]
         [ProducesResponseType(500)]
         public IActionResult SaveArticoli([FromBody] Articoli articolo)
@@ -171,7 +174,7 @@ namespace ArticoliWebService.Controllers
 
         [HttpPut("modifica")]
         [ProducesResponseType(201, Type = typeof(InfoMsg))]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(422)]
         [ProducesResponseType(500)]
         public IActionResult UpdateArticoli([FromBody] Articoli articolo)
@@ -209,7 +212,7 @@ namespace ArticoliWebService.Controllers
 
         [HttpDelete("elimina/{codart}")]
         [ProducesResponseType(201, Type = typeof(InfoMsg))]
-        [ProducesResponseType(400, Type = typeof(InfoMsg))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(InfoMsg))]
         [ProducesResponseType(422, Type = typeof(InfoMsg))]
         [ProducesResponseType(500)]
         public IActionResult DeleteArticoli(string codart)

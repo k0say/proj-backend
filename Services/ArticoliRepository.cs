@@ -12,7 +12,7 @@ namespace ArticoliWebService.Services
 
         public ArticoliRepository(AlphaShopDbContext alphaShopDbContext)
         {
-           this.alphaShopDbContext =  alphaShopDbContext;
+            this.alphaShopDbContext = alphaShopDbContext;
         }
 
         public async Task<ICollection<Articoli>> SelArticoliByDescrizione(string Descrizione)
@@ -22,6 +22,23 @@ namespace ArticoliWebService.Services
                 .Include(a => a.famassort)
                 .OrderBy(a => a.Descrizione)
                 .ToListAsync();
+        }
+
+        public async Task<ICollection<Articoli>> SelArticoliByDescrizione(string Descrizione, string IdCat)
+        {
+            bool isNumeric = int.TryParse(IdCat, out int n);
+
+            if (string.IsNullOrWhiteSpace(IdCat) || !isNumeric)
+            {
+                return await this.SelArticoliByDescrizione(Descrizione);
+            }
+
+            return await this.alphaShopDbContext.Articoli
+                    .Where(a => a.Descrizione.Contains(Descrizione))
+                    .Where(a => a.IdFamAss == int.Parse(IdCat))
+                    .Include(a => a.famassort)
+                    .OrderBy(a => a.Descrizione)
+                    .ToListAsync();
         }
 
         public async Task<Articoli> SelArticoloByCodice(string Code)
@@ -55,14 +72,14 @@ namespace ArticoliWebService.Services
 
         public bool InsArticoli(Articoli articolo)
         {
-             this.alphaShopDbContext.Add(articolo);
-             return Salva();
+            this.alphaShopDbContext.Add(articolo);
+            return Salva();
         }
 
         public bool UpdArticoli(Articoli articolo)
         {
-           this.alphaShopDbContext.Update(articolo);
-           return Salva();
+            this.alphaShopDbContext.Update(articolo);
+            return Salva();
         }
 
         public bool DelArticoli(Articoli articolo)
@@ -71,7 +88,7 @@ namespace ArticoliWebService.Services
             return Salva();
         }
 
-        public async Task<bool> ArticoloExists(string Code) => await 
+        public async Task<bool> ArticoloExists(string Code) => await
                 this.alphaShopDbContext
                 .Articoli
                 .AnyAsync(c => c.CodArt == Code);
@@ -79,9 +96,9 @@ namespace ArticoliWebService.Services
         public bool Salva()
         {
             var saved = this.alphaShopDbContext.SaveChanges();
-            return saved >= 0 ? true : false; 
+            return saved >= 0 ? true : false;
         }
 
-        
+
     }
 }
