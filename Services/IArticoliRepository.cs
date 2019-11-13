@@ -14,6 +14,8 @@ namespace ArticoliWebService.Services
         Task<Articoli> SelArticoloByCodice(string Code);
         Articoli SelArticoloByCodice2(string Code);
         Task<Articoli> SelArticoloByEan(string Ean);
+        Task<ICollection<Iva>> SelIva();
+        Task<ICollection<FamAssort>> SelCat();
         bool InsArticoli(Articoli articolo);
         bool UpdArticoli(Articoli articolo);
         bool DelArticoli(Articoli articolo);

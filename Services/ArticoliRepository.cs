@@ -99,6 +99,18 @@ namespace ArticoliWebService.Services
             return saved >= 0 ? true : false;
         }
 
+        public async Task<ICollection<Iva>> SelIva()
+        {
+            return await this.alphaShopDbContext.Iva
+                .OrderBy(a => a.Aliquota)
+                .ToListAsync();
+        }
 
+        public async Task<ICollection<FamAssort>> SelCat()
+        {
+            return await this.alphaShopDbContext.Famassort
+                .OrderBy(a => a.Id)
+                .ToListAsync();
+        }
     }
 }
