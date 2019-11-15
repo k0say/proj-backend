@@ -42,23 +42,23 @@ namespace ArticoliWebService.Controllers
             {
                 return NotFound(string.Format("Non è stato trovato alcun articolo con il filtro '{0}'", filter));
             }
-        /*
-            foreach (var articolo in articoli)
-            {
-                articoliDto.Add(new ArticoliDto
+            /*
+                foreach (var articolo in articoli)
                 {
-                    CodArt = articolo.CodArt,
-                    Descrizione = articolo.Descrizione,
-                    Um = articolo.Um,
-                    CodStat = articolo.CodStat,
-                    PzCart = articolo.PzCart,
-                    PesoNetto = articolo.PesoNetto,
-                    DataCreazione = articolo.DataCreazione,
-                    Categoria = (articolo.famassort != null) ? articolo.famassort.Descrizione : null,
-                    IdStatoArt = articolo.IdStatoArt
-                });
-            }
-        */
+                    articoliDto.Add(new ArticoliDto
+                    {
+                        CodArt = articolo.CodArt,
+                        Descrizione = articolo.Descrizione,
+                        Um = articolo.Um,
+                        CodStat = articolo.CodStat,
+                        PzCart = articolo.PzCart,
+                        PesoNetto = articolo.PesoNetto,
+                        DataCreazione = articolo.DataCreazione,
+                        Categoria = (articolo.famassort != null) ? articolo.famassort.Descrizione : null,
+                        IdStatoArt = articolo.IdStatoArt
+                    });
+                }
+            */
             return Ok(mapper.Map<IEnumerable<ArticoliDto>>(articoli));
         }
 
@@ -79,14 +79,16 @@ namespace ArticoliWebService.Controllers
             {
                 CodArt = articolo.CodArt,
                 Descrizione = articolo.Descrizione,
-                Um = articolo.Um,
-                CodStat = articolo.CodStat,
+                Um = articolo.Um.Trim(),
+                CodStat = articolo.CodStat.Trim(),
                 PzCart = articolo.PzCart,
                 PesoNetto = articolo.PesoNetto,
                 DataCreazione = articolo.DataCreazione,
                 Ean = barcodeDto,
+                IdIva = articolo.IdIva,
+                IdFamAss = articolo.IdFamAss,
                 Categoria = (articolo.famassort != null) ? articolo.famassort.Descrizione : null,
-                IdStatoArt = articolo.IdStatoArt
+                IdStatoArt = articolo.IdStatoArt.Trim()
             };
 
             return articoliDto;
@@ -137,15 +139,6 @@ namespace ArticoliWebService.Controllers
                 return BadRequest(ModelState);
             }
 
-            //Contolliamo se l'articolo è presente
-            var isPresent = articolirepository.SelArticoloByCodice2(articolo.CodArt);
-
-            if (isPresent != null)
-            {
-                ModelState.AddModelError("", $"Articolo {articolo.CodArt} presente in anagrafica! Impossibile utilizzare il metodo POST!");
-                return StatusCode(422, ModelState);
-            }
-
             //Verifichiamo che i dati siano corretti
             if (!ModelState.IsValid)
             {
@@ -155,11 +148,22 @@ namespace ArticoliWebService.Controllers
                 {
                     foreach (var modelError in modelState.Errors)
                     {
-                        ErrVal += modelError.ErrorMessage + "|";
+                        ErrVal += modelError.ErrorMessage + " - ";
                     }
                 }
-                return BadRequest(ErrVal);
+                return BadRequest(new InfoMsg(DateTime.Today, ErrVal));
             }
+
+            //Contolliamo se l'articolo è presente
+            var isPresent = articolirepository.SelArticoloByCodice2(articolo.CodArt);
+
+            if (isPresent != null)
+            {
+                ModelState.AddModelError("", $"Articolo {articolo.CodArt} presente in anagrafica! Impossibile utilizzare il metodo POST!");
+                return StatusCode(422, ModelState);
+            }
+
+
 
             //verifichiamo che i dati siano stati regolarmente inseriti nel database
             if (!articolirepository.InsArticoli(articolo))
@@ -184,6 +188,21 @@ namespace ArticoliWebService.Controllers
                 return BadRequest(ModelState);
             }
 
+            //Verifichiamo che i dati siano corretti
+            if (!ModelState.IsValid)
+            {
+                string ErrVal = "";
+
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var modelError in modelState.Errors)
+                    {
+                        ErrVal += modelError.ErrorMessage + " - ";
+                    }
+                }
+                return BadRequest(new InfoMsg(DateTime.Today, ErrVal));
+            }
+
             //Contolliamo se l'articolo è presente (Usare il metodo senza Traking)
             var isPresent = articolirepository.SelArticoloByCodice2(articolo.CodArt);
 
@@ -191,12 +210,6 @@ namespace ArticoliWebService.Controllers
             {
                 ModelState.AddModelError("", $"Articolo {articolo.CodArt} NON presente in anagrafica! Impossibile utilizzare il metodo PUT!");
                 return StatusCode(422, ModelState);
-            }
-
-            //Verifichiamo che i dati siano corretti
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
             }
 
             //verifichiamo che i dati siano stati regolarmente inseriti nel database
