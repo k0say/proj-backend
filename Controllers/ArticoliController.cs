@@ -79,16 +79,16 @@ namespace ArticoliWebService.Controllers
             {
                 CodArt = articolo.CodArt,
                 Descrizione = articolo.Descrizione,
-                Um = articolo.Um.Trim(),
-                CodStat = articolo.CodStat.Trim(),
+                Um = (articolo.Um != null) ? articolo.Um.Trim() : "",
+                CodStat = (articolo.CodStat != null) ? articolo.CodStat.Trim() : "",
                 PzCart = articolo.PzCart,
                 PesoNetto = articolo.PesoNetto,
                 DataCreazione = articolo.DataCreazione,
                 Ean = barcodeDto,
                 IdIva = articolo.IdIva,
                 IdFamAss = articolo.IdFamAss,
-                Categoria = (articolo.famassort != null) ? articolo.famassort.Descrizione : null,
-                IdStatoArt = articolo.IdStatoArt.Trim()
+                Categoria = (articolo.famassort != null) ? articolo.famassort.Descrizione : "Non definito",
+                IdStatoArt = (articolo.IdStatoArt != null) ? articolo.IdStatoArt.Trim() : null
             };
 
             return articoliDto;
@@ -159,20 +159,21 @@ namespace ArticoliWebService.Controllers
 
             if (isPresent != null)
             {
-                ModelState.AddModelError("", $"Articolo {articolo.CodArt} presente in anagrafica! Impossibile utilizzare il metodo POST!");
-                return StatusCode(422, ModelState);
+                //ModelState.AddModelError("", $"Articolo {articolo.CodArt} presente in anagrafica! Impossibile utilizzare il metodo POST!");
+                return StatusCode(422, new InfoMsg(DateTime.Today, $"Articolo {articolo.CodArt} presente in anagrafica! Impossibile utilizzare il metodo POST!"));
             }
 
-
+            articolo.DataCreazione = DateTime.Today;
 
             //verifichiamo che i dati siano stati regolarmente inseriti nel database
             if (!articolirepository.InsArticoli(articolo))
             {
-                ModelState.AddModelError("", $"Ci sono stati problemi nell'inserimento dell'Articolo {articolo.CodArt}.  ");
-                return StatusCode(500, ModelState);
+                //ModelState.AddModelError("", $"Ci sono stati problemi nell'inserimento dell'Articolo {articolo.CodArt}.  ");
+                return StatusCode(500, new InfoMsg(DateTime.Today, $"Ci sono stati problemi nell'inserimento dell'Articolo {articolo.CodArt}.  "));
             }
 
-            return CreatedAtRoute("GetArticoli", new { codart = articolo.CodArt }, CreateArticoloDTO(articolo));
+            //return CreatedAtRoute("GetArticoli", new { codart = articolo.CodArt }, CreateArticoloDTO(articolo));
+            return Ok(new InfoMsg(DateTime.Today, $"Inserimento articolo {articolo.CodArt} eseguita con successo!"));
 
         }
 
@@ -208,15 +209,15 @@ namespace ArticoliWebService.Controllers
 
             if (isPresent == null)
             {
-                ModelState.AddModelError("", $"Articolo {articolo.CodArt} NON presente in anagrafica! Impossibile utilizzare il metodo PUT!");
-                return StatusCode(422, ModelState);
+                //ModelState.AddModelError("", $"Articolo {articolo.CodArt} NON presente in anagrafica! Impossibile utilizzare il metodo PUT!");
+                return StatusCode(422, $"Articolo {articolo.CodArt} NON presente in anagrafica! Impossibile utilizzare il metodo PUT!");
             }
 
             //verifichiamo che i dati siano stati regolarmente inseriti nel database
             if (!articolirepository.UpdArticoli(articolo))
             {
-                ModelState.AddModelError("", $"Ci sono stati problemi nella modifica dell'Articolo {articolo.CodArt}.  ");
-                return StatusCode(500, ModelState);
+                //ModelState.AddModelError("", $"Ci sono stati problemi nella modifica dell'Articolo {articolo.CodArt}.  ");
+                return StatusCode(500, $"Ci sono stati problemi nella modifica dell'Articolo {articolo.CodArt}.  ");
             }
 
             return Ok(new InfoMsg(DateTime.Today, $"Modifica articolo {articolo.CodArt} eseguita con successo!"));
@@ -246,8 +247,8 @@ namespace ArticoliWebService.Controllers
             //verifichiamo che i dati siano stati regolarmente eliminati dal database
             if (!articolirepository.DelArticoli(articolo))
             {
-                ModelState.AddModelError("", $"Ci sono stati problemi nella eliminazione dell'Articolo {articolo.CodArt}.  ");
-                return StatusCode(500, ModelState);
+                //ModelState.AddModelError("", $"Ci sono stati problemi nella eliminazione dell'Articolo {articolo.CodArt}.  ");
+                return StatusCode(500, $"Ci sono stati problemi nella eliminazione dell'Articolo {articolo.CodArt}.  ");
             }
 
             return Ok(new InfoMsg(DateTime.Today, $"Eliminazione articolo {codart} eseguita con successo!"));

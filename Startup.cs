@@ -56,14 +56,14 @@ namespace Articoli_Web_Service
             }
             */
 
-            app.UseCors(x => x
-                .AllowAnyOrigin()
+           app.UseCors(
+                options => options
+                .WithOrigins("http://localhost:4200")
+                .WithMethods("POST" ,"PUT", "DELETE", "GET")
                 .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials()
-            );
+           );
 
-            app.UseHttpsRedirection();
+           // app.UseHttpsRedirection();
             app.UseMvc();
         }
     }
